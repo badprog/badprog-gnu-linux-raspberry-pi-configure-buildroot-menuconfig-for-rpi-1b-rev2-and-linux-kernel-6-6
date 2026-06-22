@@ -9,10 +9,6 @@
   "workspaceFolder": "/workspaces/embedded-linux",
   // Map the physical folder project (outside devcontainer) directly to that specific path
   "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/embedded-linux,type=bind",
-  "mounts": [
-    "source=${localEnv:BUILDROOT_SHARED_DIR}/dl,target=/workspaces/common/dl,type=bind",
-    "source=${localEnv:BUILDROOT_SHARED_DIR}/ccache,target=/workspaces/common/ccache,type=bind"
-  ],
   "remoteUser": "badprog",
   "customizations": {
     "vscode": {
