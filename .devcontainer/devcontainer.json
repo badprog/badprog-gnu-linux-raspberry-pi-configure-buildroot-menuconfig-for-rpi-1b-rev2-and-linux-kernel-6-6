@@ -1,0 +1,35 @@
+// badprog.com
+{
+  "name": "${localWorkspaceFolderBasename}",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": "."
+  },
+  // Force VSCode to open this specific folder inside the container
+  "workspaceFolder": "/workspaces/embedded-linux",
+  // Map the physical folder project (outside devcontainer) directly to that specific path
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/embedded-linux,type=bind",
+  "mounts": [
+    "source=${localEnv:BUILDROOT_SHARED_DIR}/dl,target=/workspaces/common/dl,type=bind",
+    "source=${localEnv:BUILDROOT_SHARED_DIR}/ccache,target=/workspaces/common/ccache,type=bind"
+  ],
+  "remoteUser": "badprog",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-vscode.cpptools", // C/C++ support for kernel development
+        "EditorConfig.EditorConfig", // Code style enforcement
+        "ms-vscode.makefile-tools", // Makefile syntax highlighting and support
+        "mcu-debug.rtos-views" // Optional RTOS viewer for embedded tasks
+      ],
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "files.insertFinalNewline": true, // Recommended for Buildroot patches and config files
+        "workbench.colorCustomizations": {
+          "statusBarItem.remoteBackground": "#ce16f3",
+          "statusBar.background": "#0d22db"
+        }
+      }
+    }
+  }
+}

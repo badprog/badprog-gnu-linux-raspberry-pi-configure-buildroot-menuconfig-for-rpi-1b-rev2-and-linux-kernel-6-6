@@ -1,0 +1,6 @@
+output/
+misc/
+dl/
+buildroot/
+buildroot-dl/
+*.tar.gz

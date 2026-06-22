@@ -1,0 +1,75 @@
+#badprog.com
+name: Buildroot CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Install Buildroot dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            bc \
+            binutils \
+            build-essential \
+            cpio \
+            dosfstools \
+            file \
+            kmod \
+            libncurses-dev \
+            libssl-dev \
+            mtools \
+            python3 \
+            rsync \
+            unzip \
+            wget
+
+      - name: Cache Buildroot sources
+        uses: actions/cache@v4
+        with:
+          path: buildroot-dl
+          key: buildroot-dl-2024.02.9-${{ hashFiles('buildroot-config/badprog_rpi1b_defconfig') }}
+          restore-keys: |
+            buildroot-dl-2024.02.9-
+
+      - name: Download Buildroot
+        run: |
+          wget -q https://buildroot.org/downloads/buildroot-2024.02.9.tar.gz
+          tar xf buildroot-2024.02.9.tar.gz
+          mv buildroot-2024.02.9 buildroot
+
+      - name: Restore dl cache into Buildroot
+        run: |
+          if [ -d buildroot-dl ]; then
+            cp -r buildroot-dl/. buildroot/dl/
+          fi
+
+      - name: Load defconfig
+        run: |
+          make -C buildroot O=$(pwd)/output BR2_DEFCONFIG=$(pwd)/buildroot-config/badprog_rpi1b_defconfig defconfig
+
+      - name: Build
+        run: make -C buildroot O=$(pwd)/output -j$(nproc) BR2_ROOTFS_OVERLAY=$(pwd)/buildroot-config/overlay
+
+      - name: Save dl cache
+        run: |
+          mkdir -p buildroot-dl
+          cp -r buildroot/dl/. buildroot-dl/
+
+      - name: Check output images
+        run: |
+          ls -lh output/images/
+          test -f output/images/zImage
+          test -f output/images/rootfs.ext2
+          test -f output/images/sdcard.img
