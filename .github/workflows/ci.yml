@@ -35,33 +35,11 @@ jobs:
             unzip \
             wget
 
-      - name: Cache Buildroot sources
-        uses: actions/cache@v4
-        with:
-          path: buildroot-dl
-          key: buildroot-dl-2024.02.9-${{ hashFiles('buildroot-config/badprog_rpi1b_defconfig') }}
-          restore-keys: |
-            buildroot-dl-2024.02.9-
-
-      - name: Cache ccache
-        uses: actions/cache@v4
-        with:
-          path: output/ccache
-          key: ccache-${{ runner.os }}-${{ hashFiles('buildroot-config/badprog_rpi1b_defconfig') }}
-          restore-keys: |
-            ccache-${{ runner.os }}-
-
       - name: Download Buildroot
         run: |
           wget -q https://buildroot.org/downloads/buildroot-2024.02.9.tar.gz
           tar xf buildroot-2024.02.9.tar.gz
           mv buildroot-2024.02.9 buildroot
-
-      - name: Restore dl cache into Buildroot
-        run: |
-          if [ -d buildroot-dl ]; then
-            cp -r buildroot-dl/. buildroot/dl/
-          fi
 
       - name: Load defconfig
         run: |
@@ -70,11 +48,6 @@ jobs:
       - name: Build
         run: |
           make -C buildroot O=$(pwd)/output -j$(nproc) BR2_ROOTFS_OVERLAY=$(pwd)/buildroot-config/overlay
-
-      - name: Save dl cache
-        run: |
-          mkdir -p buildroot-dl
-          cp -r buildroot/dl/. buildroot-dl/
 
       - name: Check output images
         run: |
