@@ -1,0 +1,1 @@
+# badprog-gnu-linux-raspberry-pi-configure-buildroot-menuconfig-for-rpi-1b-rev2-and-linux-kernel-6-6
